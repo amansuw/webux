@@ -242,7 +242,7 @@
 </div>
 
 <style>
-.ws-page { max-width:1100px; padding-bottom:220px; }
+.ws-page { max-width:none; padding-bottom:220px; }
 .server-tabs { display:flex; gap:0.5rem; margin-bottom:0.75rem; }
 .server-tab { display:flex; align-items:center; gap:0.375rem; padding:0.5rem 1rem; background:var(--bg-raised); border:1px solid var(--border-default); border-radius:var(--r-md); cursor:pointer; font-size:0.85rem; color:var(--text-secondary); }
 .server-tab.active { border-color:var(--accent); color:var(--accent); background:var(--accent-dim); }

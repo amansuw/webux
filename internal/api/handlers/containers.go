@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/http"
 	"strings"
+	"sync"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/brendan4linux/webux/internal/learn"
@@ -14,6 +15,7 @@ import (
 
 // ContainersHandler manages Docker and Podman containers.
 type ContainersHandler struct {
+	mu       sync.Mutex
 	runtimes []containers.Runtime
 	learn    *learn.Store
 }
@@ -25,31 +27,46 @@ func NewContainersHandler(ls *learn.Store) *ContainersHandler {
 	}
 }
 
+// ensureRuntimes returns cached runtimes, re-probing the Docker/Podman
+// sockets if none were available yet (e.g. webux started before docker).
+// Re-probes on every call while empty so a late-starting engine is picked up
+// without requiring a webux restart.
+func (h *ContainersHandler) ensureRuntimes() []containers.Runtime {
+	h.mu.Lock()
+	defer h.mu.Unlock()
+	if len(h.runtimes) == 0 {
+		h.runtimes = containers.Detect()
+	}
+	return h.runtimes
+}
+
 // runtimeFor returns the first runtime matching the given name, or the first available.
 func (h *ContainersHandler) runtimeFor(name string) (containers.Runtime, error) {
-	if len(h.runtimes) == 0 {
+	runtimes := h.ensureRuntimes()
+	if len(runtimes) == 0 {
 		return nil, fmt.Errorf("no container runtime detected (Docker or Podman socket not found)")
 	}
 	if name == "" {
-		return h.runtimes[0], nil
+		return runtimes[0], nil
 	}
-	for _, r := range h.runtimes {
+	for _, r := range runtimes {
 		if r.Name() == name {
 			return r, nil
 		}
 	}
-	return h.runtimes[0], nil
+	return runtimes[0], nil
 }
 
 // Status handles GET /api/containers/status
 func (h *ContainersHandler) Status(w http.ResponseWriter, r *http.Request) {
+	runtimes := h.ensureRuntimes()
 	var runtimeNames []string
-	for _, rt := range h.runtimes {
+	for _, rt := range runtimes {
 		runtimeNames = append(runtimeNames, rt.Name())
 	}
 	writeJSON(w, map[string]interface{}{
 		"runtimes": runtimeNames,
-		"count":    len(h.runtimes),
+		"count":    len(runtimes),
 	})
 }
 

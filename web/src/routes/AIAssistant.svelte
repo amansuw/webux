@@ -456,7 +456,7 @@
 </div>
 
 <style>
-.ai-page { max-width:900px; padding-bottom:220px; }
+.ai-page { max-width:none; padding-bottom:220px; }
 .seg-control { display:flex; border:1px solid var(--border-default); border-radius:var(--r-md); overflow:hidden; }
 .seg-btn { padding:0.35rem 0.75rem; background:var(--bg-raised); border:none; border-right:1px solid var(--border-default); cursor:pointer; font-size:0.8rem; color:var(--text-secondary); }
 .seg-btn:last-child { border-right:none; }
@@ -502,6 +502,12 @@
 /* Settings */
 .settings-panel { padding:1.25rem; }
 .form-grid { display:grid; grid-template-columns:1fr 1fr; gap:0.875rem; }
+
+@media (max-width: 900px) {
+  .form-grid { grid-template-columns: 1fr; }
+  .chat-wrap { height: calc(100dvh - 220px); min-height: 280px; }
+  .chat-input-row { flex-wrap: wrap; }
+}
 .form-row { display:flex; flex-direction:column; gap:0.3rem; }
 .form-row label { font-size:0.75rem; color:var(--text-secondary); font-weight:500; }
 .form-row select { background:var(--bg-raised); color:var(--text-primary); }

@@ -207,8 +207,8 @@
       placeholder="Filter by command, owner, schedule…" bind:value={filterText} />
   </div>
 
-  <div class="card" style="padding:0">
-    <table class="data-table">
+  <div class="card table-scroll" style="padding:0">
+    <table class="data-table cron-table">
       <thead>
         <tr>
           <th>Schedule</th>
@@ -319,7 +319,7 @@
 </div>
 
 <style>
-.cron-page { max-width:1200px; padding-bottom:220px; }
+.cron-page { max-width:none; padding-bottom:220px; }
 .add-panel { margin-bottom:1rem; }
 .form-grid { display:grid; grid-template-columns:1fr 1fr; gap:0.75rem; }
 .form-row { display:flex; flex-direction:column; gap:0.3rem; }
@@ -327,6 +327,12 @@
 
 .cron-row:hover { background:var(--bg-hover); }
 .cron-row:hover td { background:transparent; }
+
+.cron-table { min-width: 640px; }
+
+@media (max-width: 900px) {
+  .form-grid { grid-template-columns: 1fr; }
+}
 
 .edit-row td { background:var(--bg-active); padding:0.75rem 0.875rem; vertical-align:top; }
 .edit-row:hover td { background:var(--bg-active); }

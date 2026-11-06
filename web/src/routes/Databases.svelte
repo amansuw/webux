@@ -274,7 +274,7 @@
 </div>
 
 <style>
-.db-page { max-width:1200px; padding-bottom:220px; }
+.db-page { max-width:none; padding-bottom:220px; }
 .db-layout { display:flex; gap:1rem; align-items:flex-start; }
 .db-instances { width:280px; flex-shrink:0; display:flex; flex-direction:column; gap:0.5rem; }
 .inst-card { padding:0.875rem; cursor:default; }
@@ -304,4 +304,10 @@
 .sec-fail .sec-label { color:#f87171; }
 .sec-detail { font-size:0.74rem; color:var(--text-secondary); margin-top:0.2rem; }
 .sec-found { font-size:0.7rem; color:var(--text-tertiary); margin-top:0.15rem; font-style:italic; }
+
+@media (max-width: 900px) {
+  .db-layout { flex-direction: column; }
+  .db-instances { width: 100%; }
+  .result-table td { max-width: 140px; }
+}
 </style>

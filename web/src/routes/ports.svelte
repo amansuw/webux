@@ -132,8 +132,7 @@
     <!-- Filter bar -->
     <div class="filter-bar">
       <input
-        class="search-input"
-        style="max-width:320px"
+        class="search-input filter-search"
         type="search"
         placeholder="Filter by process, port, state…"
         bind:value={filterText}
@@ -233,9 +232,10 @@
 </div>
 
 <style>
-.ports-page { max-width: 1200px; padding-bottom: 220px; }
+.ports-page { max-width: none; padding-bottom: 220px; }
 
-.filter-bar { display: flex; gap: 0.75rem; align-items: center; margin-bottom: 0.75rem; }
+.filter-bar { display: flex; gap: 0.75rem; align-items: center; margin-bottom: 0.75rem; flex-wrap: wrap; }
+.filter-search { max-width: 320px; }
 .proto-tabs { display: flex; border: 1px solid var(--border-default); border-radius: var(--r-md); overflow: hidden; }
 .proto-tab { padding: 0.35rem 0.65rem; background: var(--bg-raised); border: none; border-right: 1px solid var(--border-default); cursor: pointer; font-size: 0.72rem; font-family: var(--font-mono); color: var(--text-secondary); }
 .proto-tab:last-child { border-right: none; }
@@ -253,4 +253,9 @@
 .socket-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 0.5rem; }
 .socket-card { padding: 0.75rem; }
 .port-pills { display: flex; flex-wrap: wrap; gap: 0.25rem; }
+
+@media (max-width: 900px) {
+  .filter-search { max-width: none; width: 100%; }
+  .socket-grid { grid-template-columns: 1fr; }
+}
 </style>

@@ -330,7 +330,7 @@
 </div>
 
 <style>
-.ans-page { max-width:1100px; padding-bottom:220px; }
+.ans-page { max-width:none; padding-bottom:220px; }
 .settings-panel { margin-bottom:0.75rem; }
 .settings-grid { display:grid; grid-template-columns:1fr 1fr; gap:0.75rem; }
 .form-row { display:flex; flex-direction:column; gap:0.25rem; }

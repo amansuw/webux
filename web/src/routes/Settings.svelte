@@ -314,10 +314,14 @@
 </div>
 
 <style>
-.settings-page { max-width: 800px; padding-bottom: 220px; }
+.settings-page { max-width: none; padding-bottom: 220px; }
 .settings-section { margin-bottom: 0.75rem; padding: 1.25rem; }
 .section-title { font-size: 0.9rem; font-weight: 600; margin-bottom: 1rem; color: var(--text-primary); border-bottom: 1px solid var(--border-subtle); padding-bottom: 0.5rem; }
 .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.875rem; }
+
+@media (max-width: 900px) {
+  .form-grid { grid-template-columns: 1fr; }
+}
 .form-row { display: flex; flex-direction: column; gap: 0.3rem; }
 .form-row label { font-size: 0.75rem; color: var(--text-secondary); font-weight: 500; }
 .field-hint { font-size: 0.7rem; color: var(--text-tertiary); margin-top: 0.2rem; }

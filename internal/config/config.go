@@ -8,14 +8,23 @@ import (
 
 // Config holds all runtime configuration for Webux.
 type Config struct {
-	ListenAddr  string      `yaml:"listen_addr"`
-	DataDir     string      `yaml:"data_dir"`
-	TLSCertFile string      `yaml:"tls_cert_file"`
-	TLSKeyFile  string      `yaml:"tls_key_file"`
-	LogLevel    string      `yaml:"log_level"`
-	LearnMode   bool        `yaml:"learn_mode"`
-	Auth        AuthConfig  `yaml:"auth"`
-	Files       FilesConfig `yaml:"files"`
+	ListenAddr  string            `yaml:"listen_addr"`
+	DataDir     string            `yaml:"data_dir"`
+	TLSCertFile string            `yaml:"tls_cert_file"`
+	TLSKeyFile  string            `yaml:"tls_key_file"`
+	LogLevel    string            `yaml:"log_level"`
+	LearnMode   bool              `yaml:"learn_mode"`
+	Auth        AuthConfig        `yaml:"auth"`
+	Files       FilesConfig       `yaml:"files"`
+	Cloudflare  CloudflareConfig  `yaml:"cloudflare"`
+}
+
+// CloudflareConfig enables dashboard analytics via the Cloudflare GraphQL API.
+type CloudflareConfig struct {
+	APIToken  string `yaml:"api_token"`
+	ZoneID    string `yaml:"zone_id"`
+	AccountID string `yaml:"account_id"`
+	ZoneName  string `yaml:"zone_name"`
 }
 
 // FilesConfig restricts the file manager to a subtree.
@@ -72,6 +81,18 @@ func Load(path string) (*Config, error) {
 	}
 	if v := os.Getenv("WEBUX_AUTH_DISABLED"); v == "true" || v == "1" {
 		cfg.Auth.Disabled = true
+	}
+	if v := os.Getenv("WEBUX_CF_API_TOKEN"); v != "" {
+		cfg.Cloudflare.APIToken = v
+	}
+	if v := os.Getenv("WEBUX_CF_ZONE_ID"); v != "" {
+		cfg.Cloudflare.ZoneID = v
+	}
+	if v := os.Getenv("WEBUX_CF_ACCOUNT_ID"); v != "" {
+		cfg.Cloudflare.AccountID = v
+	}
+	if v := os.Getenv("WEBUX_CF_ZONE_NAME"); v != "" {
+		cfg.Cloudflare.ZoneName = v
 	}
 
 	return cfg, nil

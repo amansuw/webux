@@ -1,37 +1,38 @@
 /* Webux Design System
-   Theme: midnight-blue/emerald — dark navy base, blue-tinted UI chrome,
-   emerald-green accents. Inspired by the logo palette.
+   Theme: shadcn-svelte zinc dark (token remap)
+   Surfaces/text/borders follow shadcn .dark zinc; emerald accent kept for brand.
+   Ref: https://shadcn-svelte.com/docs/theming
 */
 
 @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap');
 
 /* ── Tokens ─────────────────────────────────────────────── */
 :root {
-  /* Surfaces — deep navy base */
-  --bg-base:      #0a0d14;
-  --bg-panel:     #0f1320;
-  --bg-raised:    #151b2e;
-  --bg-hover:     #1a2238;
-  --bg-active:    #1e2844;
+  /* Surfaces — shadcn zinc dark */
+  --bg-base:      #09090b;
+  --bg-panel:     #18181b;
+  --bg-raised:    #27272a;
+  --bg-hover:     #3f3f46;
+  --bg-active:    #52525b;
 
-  /* Borders — blue-tinted */
-  --border-subtle:  rgba(99,140,255,0.08);
-  --border-default: rgba(99,140,255,0.15);
-  --border-strong:  rgba(99,140,255,0.28);
+  /* Borders — neutral white alpha (shadcn --border); live binary uses .1/.2/.3 approx */
+  --border-subtle:  rgba(250,250,250,0.1);
+  --border-default: rgba(250,250,250,0.2);
+  --border-strong:  rgba(250,250,250,0.3);
 
-  /* Text */
-  --text-primary:   #dde4f5;
-  --text-secondary: #7b8db8;
-  --text-tertiary:  #424e6e;
-  --text-inverse:   #0a0d14;
+  /* Text — foreground / muted-foreground hierarchy */
+  --text-primary:   #fafafa;
+  --text-secondary: #d4d4d8;
+  --text-tertiary:  #a1a1aa;
+  --text-inverse:   #09090b;
 
-  /* Brand accent — emerald green (matches logo "LINUX PANEL") */
+  /* Brand accent — emerald (webux) */
   --accent:         #2ed898;
   --accent-dim:     rgba(46,216,152,0.12);
   --accent-hover:   #4ee8a8;
 
-  /* Nav item resting color — blue-ish */
-  --nav-item:       #8ba4d4;
+  /* Nav */
+  --nav-item:       #a1a1aa;
   --nav-item-hover: #2ed898;
 
   /* Status */
@@ -54,11 +55,17 @@
   --sidebar-width: 220px;
   --topbar-height: 48px;
 
-  /* Radius */
+  /* Radius — shadcn ~0.625rem */
   --r-sm: 4px;
   --r-md: 6px;
   --r-lg: 10px;
+
+  /* Icons — keep glyph buttons readable at a glance */
+  --icon-sm: 1rem;
+  --icon-md: 1.15rem;
+  --icon-lg: 1.35rem;
 }
+
 
 /* ── Reset ───────────────────────────────────────────────── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -71,8 +78,9 @@ body {
   font-size: 15px;
   line-height: 1.55;
   -webkit-font-smoothing: antialiased;
+  overflow: hidden;
 }
-#app { height: 100%; display: flex; }
+#app { height: 100%; width: 100%; display: flex; min-width: 0; }
 
 /* ── Scrollbars ──────────────────────────────────────────── */
 ::-webkit-scrollbar { width: 6px; height: 6px; }
@@ -89,7 +97,7 @@ a { color: var(--accent); text-decoration: none; }
 a:hover { color: var(--accent-hover); }
 
 /* ── Layout shell ────────────────────────────────────────── */
-.app-shell { display: flex; width: 100%; height: 100%; }
+.app-shell { display: flex; width: 100%; height: 100%; position: relative; }
 
 .sidebar {
   width: var(--sidebar-width);
@@ -100,6 +108,7 @@ a:hover { color: var(--accent-hover); }
   flex-direction: column;
   overflow-y: auto;
   overflow-x: hidden;
+  z-index: 40;
 }
 
 .main-area {
@@ -125,7 +134,13 @@ a:hover { color: var(--accent-hover); }
 .page-content {
   flex: 1;
   overflow-y: auto;
+  overflow-x: hidden;
   padding: 1.25rem 1.5rem;
+  -webkit-overflow-scrolling: touch;
+}
+
+.nav-backdrop {
+  display: none;
 }
 
 /* ── Page header ─────────────────────────────────────────── */
@@ -204,6 +219,27 @@ a:hover { color: var(--accent-hover); }
   background: var(--bg-hover);
   border-color: var(--border-default);
   color: var(--accent);
+}
+
+/* Compact glyph / icon action buttons (tables, toolbars) */
+.action-btn,
+.icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2rem;
+  min-height: 2rem;
+  padding: 0.3rem 0.45rem;
+  font-size: var(--icon-md);
+  line-height: 1;
+}
+.hc-refresh,
+.ps-refresh {
+  font-size: var(--icon-lg) !important;
+  min-width: 2rem;
+  min-height: 2rem;
+  padding: 0.25rem 0.4rem !important;
+  line-height: 1;
 }
 
 /* ── Badges ──────────────────────────────────────────────── */
@@ -305,3 +341,122 @@ a:hover { color: var(--accent-hover); }
 
 /* ── Utilities ───────────────────────────────────────────── */
 .mono { font-family: var(--font-mono); }
+
+/* Scrollable table wrapper — use on wide tables */
+.table-scroll {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* ── Mobile / tablet ─────────────────────────────────────── */
+@media (max-width: 900px) {
+  .sidebar {
+    position: fixed;
+    inset: 0 auto 0 0;
+    width: min(var(--sidebar-width), 86vw);
+    max-width: 300px;
+    transform: translateX(-105%);
+    transition: transform 0.22s ease;
+    box-shadow: none;
+    border-right: 1px solid var(--border-subtle);
+  }
+  .app-shell.nav-open .sidebar {
+    transform: translateX(0);
+    box-shadow: 8px 0 32px rgba(0, 0, 0, 0.45);
+  }
+  .nav-backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    border: 0;
+    padding: 0;
+    margin: 0;
+    background: rgba(0, 0, 0, 0.55);
+    z-index: 35;
+    cursor: pointer;
+  }
+
+  .page-content {
+    padding: 0.85rem 0.85rem 5.5rem;
+  }
+
+  .page-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+  }
+  .page-header .actions {
+    flex-wrap: wrap;
+    width: 100%;
+  }
+  .page-header .actions .btn,
+  .page-header .actions .search-input {
+    flex: 1 1 auto;
+  }
+
+  h1 { font-size: 1.15rem; }
+
+  .data-table {
+    font-size: 0.8rem;
+  }
+  .data-table th,
+  .data-table td {
+    padding: 0.4rem 0.55rem;
+  }
+
+  /* Keep table layout intact; scroll the wrapper / card */
+  .table-scroll,
+  .card[style*="overflow-x"],
+  .table-wrap {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .filter-bar {
+    flex-wrap: wrap !important;
+    align-items: stretch !important;
+  }
+  .filter-bar > .search-input,
+  .filter-bar .search-input,
+  .filter-search {
+    max-width: none !important;
+    width: 100%;
+    flex: 1 1 100%;
+  }
+
+  .form-grid,
+  .settings-grid,
+  .about-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .modal,
+  .confirm-modal,
+  .deploy-modal {
+    width: min(540px, calc(100vw - 1.5rem)) !important;
+    max-width: calc(100vw - 1.5rem);
+  }
+
+  .seg-control {
+    flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 600px) {
+  .page-content {
+    padding: 0.7rem 0.65rem 5.75rem;
+  }
+  .card {
+    padding: 0.85rem;
+  }
+  .search-input {
+    font-size: 0.85rem;
+  }
+  .btn {
+    font-size: 0.8rem;
+  }
+}

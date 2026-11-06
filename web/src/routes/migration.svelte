@@ -237,7 +237,7 @@
 </div>
 
 <style>
-.migration-page { padding: 2rem; max-width: 1200px; }
+.migration-page { padding: 2rem; max-width: none; }
 .page-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.5rem; }
 .page-header h1 { margin: 0 0 0.25rem; font-size: 1.5rem; font-weight: 600; }
 .subtitle { margin: 0; font-size: 0.875rem; color: var(--color-text-secondary); }

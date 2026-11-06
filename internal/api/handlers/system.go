@@ -57,12 +57,16 @@ type SystemStats struct {
 	CPUPercent    float64 `json:"cpu_percent"`
 	MemUsedMB     float64 `json:"mem_used_mb"`
 	MemTotalMB    float64 `json:"mem_total_mb"`
+	SwapUsedMB    float64 `json:"swap_used_mb"`
+	SwapTotalMB   float64 `json:"swap_total_mb"`
 	LoadAvg1      float64 `json:"load_avg_1"`
 	LoadAvg5      float64 `json:"load_avg_5"`
 	LoadAvg15     float64 `json:"load_avg_15"`
 	UptimeSeconds float64 `json:"uptime_seconds"`
 	DiskUsedGB    float64 `json:"disk_used_gb"`
 	DiskTotalGB   float64 `json:"disk_total_gb"`
+	CPUTempC      *float64 `json:"cpu_temp_c,omitempty"`
+	NVMeTempC     *float64 `json:"nvme_temp_c,omitempty"`
 }
 
 func collectStats() (*SystemStats, error) {
@@ -95,6 +99,12 @@ func collectStats() (*SystemStats, error) {
 		used := total - free - buffers - cached - sReclaimable
 		s.MemTotalMB = float64(total) / 1024
 		s.MemUsedMB = float64(used) / 1024
+		swapTotal := memInfo["SwapTotal"]
+		swapFree := memInfo["SwapFree"]
+		s.SwapTotalMB = float64(swapTotal) / 1024
+		if swapTotal > 0 {
+			s.SwapUsedMB = float64(swapTotal-swapFree) / 1024
+		}
 	}
 
 	// Load averages from /proc/loadavg
@@ -122,7 +132,72 @@ func collectStats() (*SystemStats, error) {
 		s.DiskTotalGB = float64(diskTotal) / 1e9
 	}
 
+	if t, ok := readCPUTempC(); ok {
+		s.CPUTempC = &t
+	}
+	if t, ok := readNVMeTempC(); ok {
+		s.NVMeTempC = &t
+	}
+
 	return s, nil
+}
+
+func readMilliC(path string) (float64, bool) {
+	data, err := os.ReadFile(path)
+	if err != nil {
+		return 0, false
+	}
+	v, err := strconv.ParseFloat(strings.TrimSpace(string(data)), 64)
+	if err != nil || v <= 0 {
+		return 0, false
+	}
+	return v / 1000.0, true
+}
+
+// Prefer coretemp package temp, then x86_pkg_temp thermal zone.
+func readCPUTempC() (float64, bool) {
+	entries, _ := os.ReadDir("/sys/class/hwmon")
+	for _, e := range entries {
+		base := "/sys/class/hwmon/" + e.Name()
+		name, _ := os.ReadFile(base + "/name")
+		if strings.TrimSpace(string(name)) != "coretemp" {
+			continue
+		}
+		// Package id 0 is usually temp1
+		if t, ok := readMilliC(base + "/temp1_input"); ok {
+			return t, true
+		}
+	}
+	zones, _ := os.ReadDir("/sys/class/thermal")
+	for _, z := range zones {
+		if !strings.HasPrefix(z.Name(), "thermal_zone") {
+			continue
+		}
+		base := "/sys/class/thermal/" + z.Name()
+		typ, _ := os.ReadFile(base + "/type")
+		if strings.Contains(strings.TrimSpace(string(typ)), "x86_pkg_temp") ||
+			strings.Contains(strings.TrimSpace(string(typ)), "cpu") {
+			if t, ok := readMilliC(base + "/temp"); ok {
+				return t, true
+			}
+		}
+	}
+	return 0, false
+}
+
+func readNVMeTempC() (float64, bool) {
+	entries, _ := os.ReadDir("/sys/class/hwmon")
+	for _, e := range entries {
+		base := "/sys/class/hwmon/" + e.Name()
+		name, _ := os.ReadFile(base + "/name")
+		if strings.TrimSpace(string(name)) != "nvme" {
+			continue
+		}
+		if t, ok := readMilliC(base + "/temp1_input"); ok {
+			return t, true
+		}
+	}
+	return 0, false
 }
 
 func readCPUStat() (idle, total uint64, err error) {

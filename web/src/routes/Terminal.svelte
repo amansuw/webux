@@ -393,10 +393,13 @@
   display: flex;
   flex-direction: column;
   /* 48px topbar only — learn mode pane is hidden on terminal page */
-  height: calc(100vh - 48px);
+  height: calc(100vh - var(--topbar-height, 48px));
+  height: calc(100dvh - var(--topbar-height, 48px));
   overflow: hidden;
   padding: 0;
   margin: -1.25rem -1.5rem;
+  max-width: none;
+  box-sizing: border-box;
 }
 
 .term-header {
@@ -480,6 +483,22 @@
   padding: 0.875rem 1rem;
 }
 .settings-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+
+@media (max-width: 900px) {
+  .term-page {
+    margin: -0.85rem -0.85rem;
+  }
+  .settings-grid { grid-template-columns: 1fr; }
+  .term-header { padding: 0.4rem 0.6rem; }
+  .qcmd-btn { display: none; }
+  .qcmd-more .qcmd-btn,
+  .term-header-right > .btn { display: inline-flex; }
+}
+@media (max-width: 600px) {
+  .term-page {
+    margin: -0.7rem -0.65rem;
+  }
+}
 .form-row { display: flex; flex-direction: column; gap: 0.25rem; }
 .form-row label { font-size: 0.72rem; color: var(--text-secondary); font-weight: 500; }
 

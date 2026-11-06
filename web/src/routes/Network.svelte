@@ -445,7 +445,7 @@
 .legend-rx { font-size: 0.68rem; color: var(--green); font-family: var(--font-mono); }
 .legend-tx { font-size: 0.68rem; color: var(--accent); font-family: var(--font-mono); }
 
-.net-page { max-width:1100px; padding-bottom:220px; }
+.net-page { max-width:none; padding-bottom:220px; }
 .tab-bar { display:flex; border-bottom:1px solid var(--border-subtle); margin-bottom:0.75rem; }
 .tab-btn { padding:0.5rem 1rem; background:none; border:none; border-bottom:2px solid transparent; cursor:pointer; font-size:0.85rem; color:var(--text-secondary); margin-bottom:-1px; }
 .tab-btn.active { color:var(--accent); border-bottom-color:var(--accent); font-weight:500; }
@@ -476,9 +476,15 @@
 
 .addr-row { display:flex; align-items:center; gap:0.375rem; margin-bottom:0.25rem; font-size:0.78rem; }
 
-.iface-actions { display:flex; gap:0.5rem; padding-top:0.75rem; border-top:1px solid var(--border-subtle); }
+.iface-actions { display:flex; gap:0.5rem; padding-top:0.75rem; border-top:1px solid var(--border-subtle); flex-wrap:wrap; }
 
 .empty { text-align:center; padding:2rem; color:var(--text-tertiary); }
+
+@media (max-width: 900px) {
+  .detail-grid { grid-template-columns: 1fr; }
+  .iface-stats { width: 100%; justify-content: flex-start; }
+  .expand-chevron { margin-left: 0; }
+}
 
 .modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.6); display:flex; align-items:center; justify-content:center; z-index:500; }
 .modal { background:var(--bg-panel); border:1px solid var(--border-default); border-radius:var(--r-lg); width:380px; max-width:95vw; }

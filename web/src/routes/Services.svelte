@@ -102,7 +102,7 @@
 
   <!-- Filters -->
   <div class="filter-bar">
-    <input class="search-input" style="max-width:280px" type="search"
+    <input class="search-input filter-search" type="search"
       placeholder="Filter by name or description…" bind:value={filterText} />
 
     <div class="seg-control">
@@ -242,11 +242,19 @@
 </div>
 
 <style>
-.services-page { max-width: 1300px; padding-bottom: 220px; }
+.services-page { max-width: none; padding-bottom: 220px; }
 
 .filter-bar { display:flex; gap:0.75rem; align-items:center; margin-bottom:0.75rem; flex-wrap:wrap; }
+.filter-search { max-width:280px; }
 
 .seg-control { display:flex; border:1px solid var(--border-default); border-radius:var(--r-md); overflow:hidden; }
+
+@media (max-width: 900px) {
+  .filter-search { max-width: none; width: 100%; }
+  .seg-control { width: 100%; }
+  .seg-btn { flex: 1 1 auto; text-align: center; }
+  .desc-text { max-width: 160px; }
+}
 .seg-btn { padding:0.3rem 0.6rem; background:var(--bg-raised); border:none; border-right:1px solid var(--border-default); cursor:pointer; font-size:0.72rem; font-family:var(--font-mono); color:var(--text-secondary); }
 .seg-btn:last-child { border-right:none; }
 .seg-btn.active { background:var(--accent); color:var(--text-inverse); font-weight:600; }
@@ -258,7 +266,7 @@
 .desc-text { display:block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:280px; }
 
 .unit-actions { display:flex; gap:0.2rem; justify-content:flex-end; }
-.action-btn { padding:0.25rem 0.4rem; font-size:0.8rem; min-width:28px; }
+.action-btn { padding:0.35rem 0.5rem; font-size:var(--icon-md); min-width:2rem; min-height:2rem; line-height:1; }
 
 .log-drawer {
   margin-top:1rem;

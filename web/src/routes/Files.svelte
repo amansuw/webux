@@ -254,17 +254,17 @@
                   {new Date(entry.mod_time).toLocaleString()}
                 </td>
                 <td onclick={(e) => e.stopPropagation()}>
-                  <div style="display:flex;gap:0.25rem;justify-content:flex-end">
-                    <button class="btn btn-ghost" style="font-size:0.68rem"
+                  <div style="display:flex;gap:0.3rem;justify-content:flex-end;align-items:center">
+                    <button class="btn btn-ghost action-btn"
                       onclick={() => { chmodTarget=entry; chmodValue=entry.mode_octal.replace(/^0/,''); showChmod=true; }}>
                       chmod
                     </button>
                     {#if !entry.is_dir}
-                      <a class="btn btn-ghost" style="font-size:0.68rem"
-                        href={`/api/files/download?path=${encodeURIComponent(entry.path)}${sudoParam()}`}>↓</a>
+                      <a class="btn btn-ghost action-btn"
+                        href={`/api/files/download?path=${encodeURIComponent(entry.path)}${sudoParam()}`} title="Download">↓</a>
                     {/if}
-                    <button class="btn btn-ghost" style="font-size:0.68rem;color:var(--red)"
-                      onclick={() => deleteEntry(entry)}>✕</button>
+                    <button class="btn btn-ghost action-btn" style="color:var(--red)"
+                      onclick={() => deleteEntry(entry)} title="Delete">✕</button>
                   </div>
                 </td>
               </tr>
@@ -316,7 +316,7 @@
 </div>
 
 <style>
-.files-page { max-width:1200px; padding-bottom:220px; }
+.files-page { max-width:none; padding-bottom:220px; }
 .breadcrumbs { display:flex; align-items:center; gap:0; font-size:0.78rem; margin-top:0.25rem; }
 .crumb { background:none; border:none; cursor:pointer; color:var(--accent); font-family:var(--font-mono); font-size:0.78rem; padding:0; }
 .crumb:hover { color:var(--accent-hover); }

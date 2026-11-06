@@ -1,5 +1,6 @@
 <script lang="ts">
   import './app.css';
+  import { onMount } from 'svelte';
   import Sidebar from '$components/Sidebar.svelte';
   import Topbar from '$components/Topbar.svelte';
   import CLIEchoPane from '$components/CLIEchoPane.svelte';
@@ -22,6 +23,7 @@
   import Terminal from './routes/Terminal.svelte';
   import Ansible from './routes/Ansible.svelte';
   import AIAssistant from './routes/AIAssistant.svelte';
+  import Plank from './routes/Plank.svelte';
   import Disks from './routes/Disks.svelte';
   import Logs from './routes/Logs.svelte';
   import Settings from './routes/Settings.svelte';
@@ -31,15 +33,22 @@
   let hash = $state(window.location.hash || '#/');
   let authenticated = $state(false);
   let authChecking = $state(true);
+  let navOpen = $state(false);
 
-  window.addEventListener('hashchange', () => { hash = window.location.hash || '#/'; });
+  window.addEventListener('hashchange', () => {
+    hash = window.location.hash || '#/';
+    navOpen = false;
+  });
 
   async function checkAuth() {
     try {
       const res = await fetch('/auth/whoami');
       authenticated = res.ok;
-    } catch { authenticated = false; }
-    finally { authChecking = false; }
+    } catch {
+      authenticated = false;
+    } finally {
+      authChecking = false;
+    }
   }
 
   function onLogin() {
@@ -48,49 +57,75 @@
     hash = '#/';
   }
 
-  import { onMount } from 'svelte';
-  onMount(checkAuth);
+  onMount(() => {
+    checkAuth();
+    const onResize = () => {
+      if (window.innerWidth > 900) navOpen = false;
+    };
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
+  });
 
   const routes: Record<string, any> = {
-    '#/':           Dashboard,
-    '#/ports':      Ports,
-    '#/migration':  Migration,
-    '#/services':   Services,
-    '#/processes':  Processes,
-    '#/users':      Users,
-    '#/network':    Network,
-    '#/firewall':   Firewall,
+    '#/': Dashboard,
+    '#/plank': Plank,
+    '#/ports': Ports,
+    '#/migration': Migration,
+    '#/services': Services,
+    '#/processes': Processes,
+    '#/users': Users,
+    '#/network': Network,
+    '#/firewall': Firewall,
     '#/containers': Containers,
-    '#/databases':  Databases,
+    '#/databases': Databases,
     '#/webservers': Webservers,
-    '#/files':      Files,
-    '#/cron':       Cron,
-    '#/packages':   Packages,
-    '#/puppet':     Puppet,
-    '#/terminal':   Terminal,
-    '#/ansible':    Ansible,
-    '#/ai':         AIAssistant,
-    '#/disks':      Disks,
-    '#/logs':       Logs,
-    '#/settings':   Settings,
+    '#/files': Files,
+    '#/cron': Cron,
+    '#/packages': Packages,
+    '#/puppet': Puppet,
+    '#/terminal': Terminal,
+    '#/ansible': Ansible,
+    '#/ai': AIAssistant,
+    '#/disks': Disks,
+    '#/logs': Logs,
+    '#/settings': Settings,
   };
 
   let CurrentPage = $derived(routes[hash] ?? NotFound);
 </script>
 
 {#if authChecking}
-  <div style="display:flex;align-items:center;justify-content:center;height:100vh;background:var(--bg-base);color:var(--text-tertiary)">Loading…</div>
+  <div class="boot">Loading…</div>
 {:else if !authenticated}
   <Login onLogin={onLogin} />
 {:else}
-<div class="app-shell">
-  <Sidebar currentHash={hash} />
-  <div class="main-area">
-    <Topbar />
-    <div class="page-content">
-      <CurrentPage />
+  <div class="app-shell" class:nav-open={navOpen}>
+    {#if navOpen}
+      <button
+        type="button"
+        class="nav-backdrop"
+        aria-label="Close menu"
+        onclick={() => (navOpen = false)}
+      ></button>
+    {/if}
+    <Sidebar currentHash={hash} open={navOpen} onClose={() => (navOpen = false)} />
+    <div class="main-area">
+      <Topbar onMenu={() => (navOpen = !navOpen)} menuOpen={navOpen} />
+      <div class="page-content">
+        <CurrentPage />
+      </div>
+      <CLIEchoPane />
     </div>
-    <CLIEchoPane />
   </div>
-</div>
 {/if}
+
+<style>
+  .boot {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    background: var(--bg-base);
+    color: var(--text-tertiary);
+  }
+</style>

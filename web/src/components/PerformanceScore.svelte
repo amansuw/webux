@@ -207,10 +207,11 @@
   border: none;
   cursor: pointer;
   color: var(--text-tertiary);
-  font-size: 0.9rem;
-  padding: 0.15rem 0.3rem;
+  font-size: var(--icon-lg);
+  padding: 0.25rem 0.4rem;
   border-radius: var(--r-sm);
   transition: color 0.12s;
+  line-height: 1;
 }
 .ps-refresh:hover { color: var(--accent); }
 .ps-refresh:disabled { opacity: 0.4; cursor: default; }
@@ -273,13 +274,13 @@
   transition: background 0.1s;
 }
 .ps-row-btn:hover { background: var(--bg-hover); }
-.ps-icon { font-size: 0.8rem; font-weight: 700; width: 16px; flex-shrink: 0; }
+.ps-icon { font-size: var(--icon-md); font-weight: 700; width: 1.25rem; flex-shrink: 0; line-height: 1; }
 .ps-pass .ps-icon { color: var(--accent); }
 .ps-fail .ps-icon { color: var(--red, #f87171); }
 .ps-label { font-size: 0.82rem; font-weight: 500; flex: 1; color: var(--text-primary); }
 .ps-fail .ps-label { color: var(--red, #f87171); }
 .ps-pts { font-size: 0.7rem; font-variant-numeric: tabular-nums; flex-shrink: 0; }
-.ps-chevron { font-size: 0.62rem; color: var(--text-tertiary); flex-shrink: 0; }
+.ps-chevron { font-size: var(--icon-sm); color: var(--text-tertiary); flex-shrink: 0; }
 .ps-detail {
   padding: 0.625rem 1rem 0.75rem 2.75rem;
   background: var(--bg-base);

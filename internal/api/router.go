@@ -57,6 +57,7 @@ func NewRouter(cfg RouterConfig) http.Handler {
 	})
 
 	initSys := initsys.Detect()
+	plankH := handlers.NewPlankHandler()
 
 	// ── Auth middleware FIRST — chi requires all Use() before any routes ──
 	authH := handlers.NewAuthHandler(cfg.AuthMgr)
@@ -104,6 +105,10 @@ func NewRouter(cfg RouterConfig) http.Handler {
 		perfH := handlers.NewPerformanceHandler(cfg.DB)
 		r.Get("/performance", perfH.Get)
 		r.Post("/performance/refresh", perfH.Refresh)
+
+		// Cloudflare zone analytics (optional — requires config)
+		cfH := handlers.NewCloudflareHandler(&cfg.Config.Cloudflare)
+		r.Get("/cloudflare/overview", cfH.Overview)
 
 		// Users & groups
 		usersH := handlers.NewUsersHandler(learnStore)
@@ -252,6 +257,9 @@ func NewRouter(cfg RouterConfig) http.Handler {
 		r.Delete("/ai/models", aiH.DeleteModel)
 		r.Post("/ai/chat", aiH.Chat)
 
+		// P.L.A.N.K. (Hermes Agent)
+		r.Get("/plank/status", plankH.Status)
+
 		// Settings API
 		r.Get("/settings/server", func(w http.ResponseWriter, r *http.Request) {
 			var port string
@@ -312,7 +320,17 @@ func NewRouter(cfg RouterConfig) http.Handler {
 	r.Get("/api/terminal/settings", termH.Settings)
 	r.Put("/api/terminal/settings", termH.SaveSettings)
 
+	// P.L.A.N.K. ↔ Hermes JSON-RPC bridge
+	r.Get("/ws/plank", plankH.ServeWS)
+
 	r.Get("/*", func(w http.ResponseWriter, r *http.Request) {
+		path := r.URL.Path
+		if path == "/" || path == "/index.html" || strings.HasSuffix(path, ".html") {
+			w.Header().Set("Cache-Control", "no-store, no-cache, must-revalidate")
+			w.Header().Set("Pragma", "no-cache")
+		} else if strings.HasPrefix(path, "/assets/") {
+			w.Header().Set("Cache-Control", "public, max-age=31536000, immutable")
+		}
 		http.FileServer(http.FS(cfg.WebFS)).ServeHTTP(w, r)
 	})
 

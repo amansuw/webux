@@ -248,7 +248,7 @@
 </div>
 
 <style>
-.fw-page { max-width:1100px; padding-bottom:220px; }
+.fw-page { max-width:none; padding-bottom:220px; }
 
 .status-banner { display:flex; align-items:center; justify-content:space-between; padding:0.875rem 1rem; margin-bottom:0; }
 .status-banner.active { border-color:var(--green); }
@@ -277,6 +277,12 @@
 .modal-footer { display:flex; justify-content:flex-end; gap:0.5rem; padding:1rem; border-top:1px solid var(--border-subtle); }
 .form-grid { display:grid; grid-template-columns:1fr 1fr; gap:0.75rem; }
 .form-row { display:flex; flex-direction:column; gap:0.25rem; }
+
+@media (max-width: 900px) {
+  .form-grid { grid-template-columns: 1fr; }
+  .status-banner { flex-direction: column; align-items: stretch; gap: 0.75rem; }
+  .status-right { flex-wrap: wrap; }
+}
 .form-row label { font-size:0.75rem; color:var(--text-secondary); font-weight:500; }
 .form-row select { background:var(--bg-raised); color:var(--text-primary); }
 </style>

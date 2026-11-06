@@ -403,7 +403,7 @@
 </div>
 
 <style>
-.puppet-page { max-width:1100px; padding-bottom:220px; }
+.puppet-page { max-width:none; padding-bottom:220px; }
 
 .status-banner { display:flex; align-items:center; flex-wrap:wrap; gap:1rem; padding:0.875rem 1rem; margin-bottom:0.75rem; }
 .status-banner.disabled { border-color:var(--red); }

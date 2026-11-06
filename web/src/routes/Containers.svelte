@@ -198,8 +198,8 @@
 
     <!-- ── Containers tab ─────────────────────────────────────────── -->
     {#if tab === 'containers'}
-      <div class="card" style="padding:0">
-        <table class="data-table">
+      <div class="card table-scroll" style="padding:0">
+        <table class="data-table ctr-table">
           <thead>
             <tr>
               <th>Name</th><th>Image</th><th>State</th>
@@ -227,31 +227,34 @@
                     {c.image}
                   </td>
                   <td><span class="badge {stateClass(c.state)}">{c.state}</span></td>
-                  <td>
-                    {#each (c.ports ?? []).filter(p => p.host_port) as p}
-                      <span class="badge badge-blue" style="margin:1px">{p.host_port}→{p.container_port}</span>
+                  <td class="ports-cell">
+                    {#each (c.ports ?? []).filter(p => p.host_port).slice(0, 2) as p}
+                      <span class="badge badge-blue port-badge">{p.host_port}→{p.container_port}</span>
                     {/each}
+                    {#if ((c.ports ?? []).filter(p => p.host_port).length) > 2}
+                      <span class="badge badge-gray port-badge" title={(c.ports ?? []).filter(p => p.host_port).slice(2).map(p => `${p.host_port}→${p.container_port}`).join(', ')}>+{(c.ports ?? []).filter(p => p.host_port).length - 2}</span>
+                    {/if}
                   </td>
                   <td class="mono" style="font-size:0.72rem;color:var(--text-tertiary)">{fmtSize(c.size_rw)}</td>
                   <td>
-                    <div style="display:flex;gap:0.25rem;justify-content:flex-end">
+                    <div class="ctr-actions">
                       {#if c.state === 'running'}
-                        <button class="btn btn-ghost" style="font-size:0.72rem"
+                        <button class="btn btn-ghost action-btn"
                           disabled={actionPending !== null}
-                          onclick={() => doAction(c.id, 'stop', c.name)}>■ Stop</button>
-                        <button class="btn btn-ghost" style="font-size:0.72rem"
+                          onclick={() => doAction(c.id, 'stop', c.name)} title="Stop"><span class="act-icon">■</span><span class="act-label"> Stop</span></button>
+                        <button class="btn btn-ghost action-btn"
                           disabled={actionPending !== null}
-                          onclick={() => doAction(c.id, 'restart', c.name)}>↺</button>
+                          onclick={() => doAction(c.id, 'restart', c.name)} title="Restart">↺</button>
                       {:else}
-                        <button class="btn btn-primary" style="font-size:0.72rem"
+                        <button class="btn btn-primary action-btn"
                           disabled={actionPending !== null}
-                          onclick={() => doAction(c.id, 'start', c.name)}>▶ Start</button>
+                          onclick={() => doAction(c.id, 'start', c.name)} title="Start"><span class="act-icon">▶</span><span class="act-label"> Start</span></button>
                       {/if}
-                      <button class="btn btn-ghost" style="font-size:0.72rem"
-                        onclick={() => showLogs(c.id)}>≡ Logs</button>
-                      <button class="btn btn-ghost" style="font-size:0.72rem;color:var(--red)"
+                      <button class="btn btn-ghost action-btn"
+                        onclick={() => showLogs(c.id)} title="Logs"><span class="act-icon">≡</span><span class="act-label"> Logs</span></button>
+                      <button class="btn btn-ghost action-btn" style="color:var(--red)"
                         disabled={actionPending !== null}
-                        onclick={() => doAction(c.id, 'remove', c.name)}>✕ Remove</button>
+                        onclick={() => doAction(c.id, 'remove', c.name)} title="Remove">✕</button>
                     </div>
                   </td>
                 </tr>
@@ -473,7 +476,7 @@
 </div>
 
 <style>
-.ctr-page { max-width:1200px; padding-bottom:220px; }
+.ctr-page { max-width:none; padding-bottom:220px; }
 .tab-bar { display:flex; border-bottom:1px solid var(--border-subtle); margin-bottom:0.75rem; }
 .tab-btn { padding:0.5rem 1rem; background:none; border:none; border-bottom:2px solid transparent; cursor:pointer; font-size:0.85rem; color:var(--text-secondary); margin-bottom:-1px; }
 .tab-btn.active { color:var(--accent); border-bottom-color:var(--accent); font-weight:500; }
@@ -512,4 +515,15 @@
 .preview-cmd { font-size:0.68rem; color:var(--text-tertiary); background:var(--bg-base); border-radius:var(--r-sm); padding:0.5rem 0.625rem; border-left:2px solid var(--border-default); white-space:pre-wrap; word-break:break-all; line-height:1.7; }
 .btn-danger { background:var(--red); color:#fff; border-color:var(--red); }
 .btn-danger:hover { opacity:0.85; }
+.ports-cell { white-space: nowrap; }
+.port-badge { margin: 1px; }
+.ctr-actions { display:flex; gap:0.3rem; justify-content:flex-end; align-items:center; flex-wrap:nowrap; }
+.ctr-table { min-width: 720px; }
+
+@media (max-width: 900px) {
+  .tab-bar { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .tab-btn { flex-shrink: 0; padding: 0.5rem 0.75rem; }
+  .act-label { display: none; }
+  .ctr-actions .action-btn { min-width: 2rem; padding: 0.35rem 0.45rem; }
+}
 </style>

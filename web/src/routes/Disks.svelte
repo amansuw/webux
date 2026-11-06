@@ -337,8 +337,8 @@
     <!-- ── Non-LVM Mounts ─────────────────────────────────────────── -->
     {#if (summary.mounts ?? []).filter(m => !(summary.volume_groups ?? []).some(vg => vg.volumes.some(lv => lv.mountpoint === m.mountpoint))).length > 0}
       <h2 class="section-heading" style="margin-top:1.25rem">Other Mounts</h2>
-      <div class="card" style="padding:0">
-        <table class="data-table">
+      <div class="card table-scroll" style="padding:0">
+        <table class="data-table mounts-table">
           <thead>
             <tr><th>Mount point</th><th>Device</th><th>FS</th><th>Size</th><th>Used</th><th style="min-width:120px">Usage</th><th></th></tr>
           </thead>
@@ -532,7 +532,7 @@
 </div>
 
 <style>
-.disks-page { max-width:1100px; padding-bottom:220px; }
+.disks-page { max-width:none; padding-bottom:220px; }
 .section-heading { font-size:0.72rem; font-weight:600; text-transform:uppercase; letter-spacing:0.08em; color:var(--text-tertiary); margin:0 0 0.5rem; }
 
 /* VG card */
@@ -636,4 +636,20 @@
 .usage-size { font-size:0.82rem; font-weight:600; text-align:right; }
 .usage-pct-label { font-size:0.7rem; color:var(--text-tertiary); text-align:right; }
 .usage-drill { color:var(--text-tertiary); font-size:0.75rem; }
+
+.mounts-table { min-width: 560px; }
+
+@media (max-width: 900px) {
+  .usage-row {
+    grid-template-columns: minmax(0, 1.4fr) 1fr 64px;
+    gap: 0.45rem;
+    padding: 0.45rem 0.75rem;
+  }
+  .usage-pct-label,
+  .usage-drill { display: none; }
+  .meta-row { flex-wrap: wrap; }
+  .meta-label { min-width: 90px; }
+  .part-list { padding-left: 1rem; }
+  .lv-usage { min-width: 0; width: 100%; }
+}
 </style>

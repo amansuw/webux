@@ -151,7 +151,7 @@
   </div>
 
   <div class="filter-bar" style="margin-bottom:0.75rem">
-    <input class="search-input" style="max-width:280px" type="search"
+    <input class="search-input filter-search" type="search"
       placeholder="Filter…" bind:value={filterText} />
   </div>
 
@@ -221,12 +221,12 @@
                 </td>
                 <td>
                   <div class="user-actions">
-                    <button class="btn btn-ghost" style="font-size:0.72rem;padding:0.2rem 0.4rem"
+                    <button class="btn btn-ghost action-btn"
                       disabled={actionPending === u.username}
                       onclick={() => lockToggle(u)}>
                       {u.locked ? '🔓 Unlock' : '🔒 Lock'}
                     </button>
-                    <button class="btn btn-ghost btn-danger-hover" style="font-size:0.72rem;padding:0.2rem 0.4rem"
+                    <button class="btn btn-ghost btn-danger-hover action-btn"
                       disabled={actionPending === u.username}
                       onclick={() => deleteUser(u.username)}>
                       Delete
@@ -333,7 +333,14 @@
 </div>
 
 <style>
-.users-page { max-width:1200px; padding-bottom:220px; }
+.users-page { max-width:none; padding-bottom:220px; }
+.filter-search { max-width:280px; }
+
+@media (max-width: 900px) {
+  .filter-search { max-width: none; width: 100%; }
+  .tab-bar { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .tab-btn { flex-shrink: 0; }
+}
 
 .tab-bar { display:flex; border-bottom:1px solid var(--border-subtle); margin-bottom:0.75rem; }
 .tab-btn { padding:0.5rem 1rem; background:none; border:none; border-bottom:2px solid transparent; cursor:pointer; font-size:0.85rem; color:var(--text-secondary); margin-bottom:-1px; }

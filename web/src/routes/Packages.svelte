@@ -238,7 +238,7 @@
     <!-- ── Installed ── -->
     {#if tab === 'installed'}
       <div style="margin-bottom:0.75rem">
-        <input class="search-input" style="max-width:320px" type="search" placeholder="Filter packages…" bind:value={filterText} />
+        <input class="search-input filter-search" type="search" placeholder="Filter packages…" bind:value={filterText} />
       </div>
       <div class="card" style="padding:0;overflow-x:auto">
         <table class="data-table pkg-table">
@@ -488,7 +488,7 @@
 </div>
 
 <style>
-.pkg-page { max-width:1200px; padding-bottom:220px; }
+.pkg-page { max-width:none; padding-bottom:220px; }
 .tab-bar { display:flex; border-bottom:1px solid var(--border-subtle); margin-bottom:0.75rem; }
 .tab-btn { display:flex; align-items:center; gap:0.3rem; padding:0.5rem 1rem; background:none; border:none; border-bottom:2px solid transparent; cursor:pointer; font-size:0.85rem; color:var(--text-secondary); margin-bottom:-1px; }
 .tab-btn.active { color:var(--accent); border-bottom-color:var(--accent); font-weight:500; }

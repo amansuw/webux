@@ -269,7 +269,7 @@
       <div class="logs-empty">
         <div class="empty-icon">◫</div>
         <div class="empty-title">Select a log file or service</div>
-        <div class="empty-sub">Browse /var/log on the left, or pick a systemd unit to follow its journal.</div>
+        <div class="empty-sub">Browse /var/log above, or pick a systemd unit to follow its journal.</div>
       </div>
     {:else}
       <!-- Toolbar -->
@@ -585,4 +585,33 @@
   background: var(--bg-raised);
 }
 .capped { color: var(--yellow, #fbbf24); }
+
+@media (max-width: 900px) {
+  :global(.page-content:has(.logs-layout)) {
+    padding: 0;
+    overflow: hidden;
+  }
+  .logs-layout {
+    flex-direction: column;
+    height: calc(100dvh - var(--topbar-height, 48px));
+  }
+  .logs-sidebar {
+    width: 100%;
+    max-height: 38%;
+    border-right: none;
+    border-bottom: 1px solid var(--border-subtle);
+  }
+  .logs-main {
+    flex: 1;
+    min-height: 0;
+  }
+  .filter-input {
+    width: 100%;
+    min-width: 0;
+  }
+  .toolbar-actions {
+    width: 100%;
+    flex-wrap: wrap;
+  }
+}
 </style>

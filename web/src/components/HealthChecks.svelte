@@ -125,10 +125,11 @@
   border: none;
   cursor: pointer;
   color: var(--text-tertiary);
-  font-size: 0.9rem;
-  padding: 0.15rem 0.3rem;
+  font-size: var(--icon-lg);
+  padding: 0.25rem 0.4rem;
   border-radius: var(--r-sm);
   transition: color 0.12s;
+  line-height: 1;
 }
 .hc-refresh:hover { color: var(--accent); }
 
@@ -151,10 +152,11 @@
 .hc-row-btn:hover { background: var(--bg-hover); }
 
 .hc-icon {
-  font-size: 0.8rem;
+  font-size: var(--icon-md);
   font-weight: 700;
-  width: 16px;
+  width: 1.25rem;
   flex-shrink: 0;
+  line-height: 1;
 }
 .hc-pass .hc-icon { color: var(--accent); }
 .hc-fail .hc-icon { color: var(--red); }
@@ -175,7 +177,7 @@
 }
 
 .hc-chevron {
-  font-size: 0.62rem;
+  font-size: var(--icon-sm);
   color: var(--text-tertiary);
   flex-shrink: 0;
 }

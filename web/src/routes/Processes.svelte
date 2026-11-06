@@ -112,7 +112,7 @@
     <div class="alert alert-error" style="margin-bottom:1rem">{error}</div>
   {/if}
   <div class="filter-bar">
-    <input class="search-input" style="max-width:320px" type="search"
+    <input class="search-input filter-search" type="search"
       placeholder="Filter by name, PID, user, cmdline…" bind:value={filterText} />
     <span style="font-size:0.72rem;color:var(--text-tertiary);font-family:var(--font-mono)">
       {filtered.length} shown
@@ -192,10 +192,11 @@
 </div>
 
 <style>
-.proc-page { max-width:1300px; padding-bottom:220px; }
-.filter-bar { display:flex; gap:0.75rem; align-items:center; margin-bottom:0.75rem; }
+.proc-page { max-width:none; padding-bottom:220px; }
+.filter-bar { display:flex; gap:0.75rem; align-items:center; margin-bottom:0.75rem; flex-wrap:wrap; }
+.filter-search { max-width:320px; }
 .auto-refresh { display:flex; align-items:center; gap:0.375rem; font-size:0.78rem; color:var(--text-secondary); cursor:pointer; }
-.proc-table { font-size:0.78rem; }
+.proc-table { font-size:0.78rem; min-width:640px; }
 .sortable { cursor:pointer; user-select:none; }
 .sortable:hover { color:var(--text-primary) !important; }
 .proc-row { cursor:pointer; }
@@ -211,4 +212,12 @@
 .detail-row { display:flex; flex-direction:column; gap:2px; }
 .detail-label { font-size:0.65rem; font-weight:500; color:var(--text-tertiary); text-transform:uppercase; letter-spacing:0.05em; }
 .cmdline-full { font-size:0.72rem; color:var(--text-secondary); word-break:break-all; font-family:var(--font-mono); }
+
+@media (max-width: 900px) {
+  .filter-search { max-width: none; width: 100%; }
+  .proc-detail { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 480px) {
+  .proc-detail { grid-template-columns: 1fr; }
+}
 </style>

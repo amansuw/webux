@@ -134,6 +134,14 @@
   background: var(--bg-panel);
   border-top: 1px solid var(--border-subtle);
 }
+@media (max-width: 900px) {
+  .echo-pane {
+    left: 0;
+  }
+  .toggle-sub {
+    display: none;
+  }
+}
 
 .echo-pane.hidden { display: none; }
 
