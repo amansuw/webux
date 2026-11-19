@@ -35,7 +35,9 @@
   let topProcs: any[] = $state(Array.from({ length: PROC_ROWS }, () => null));
   let mounts: any[] = $state([]);
   let expandedMount = $state('');
+  let expandedDir = $state('');
   let mountUsage: Record<string, { loading: boolean; error: string; entries: any[] }> = $state({});
+  let dirUsage: Record<string, { loading: boolean; error: string; entries: any[] }> = $state({});
   let containers: any[] = $state([]);
   let cronJobs: any[] = $state([]);
   let cronCount = $state(0);
@@ -247,13 +249,15 @@
   async function toggleMount(mount: string) {
     if (expandedMount === mount) {
       expandedMount = '';
+      expandedDir = '';
       return;
     }
     expandedMount = mount;
+    expandedDir = '';
     if (mountUsage[mount]?.entries?.length) return;
     mountUsage = { ...mountUsage, [mount]: { loading: true, error: '', entries: [] } };
     try {
-      const res = await fetch(`/api/disks/usage?mount=${encodeURIComponent(mount)}&top=8`);
+      const res = await fetch(`/api/disks/usage?mount=${encodeURIComponent(mount)}&top=10`);
       const d = await res.json().catch(() => null);
       if (!res.ok) throw new Error(d?.error || `usage ${res.status}`);
       mountUsage = {
@@ -264,6 +268,32 @@
       mountUsage = {
         ...mountUsage,
         [mount]: { loading: false, error: e?.message || 'Failed to load', entries: [] },
+      };
+    }
+  }
+
+  async function toggleDir(mount: string, path: string) {
+    if (expandedDir === path) {
+      expandedDir = '';
+      return;
+    }
+    expandedDir = path;
+    if (dirUsage[path]?.entries?.length) return;
+    dirUsage = { ...dirUsage, [path]: { loading: true, error: '', entries: [] } };
+    try {
+      const res = await fetch(
+        `/api/disks/drilldown?mount=${encodeURIComponent(mount)}&path=${encodeURIComponent(path)}&top=10`,
+      );
+      const d = await res.json().catch(() => null);
+      if (!res.ok) throw new Error(d?.error || `drilldown ${res.status}`);
+      dirUsage = {
+        ...dirUsage,
+        [path]: { loading: false, error: '', entries: d?.entries ?? [] },
+      };
+    } catch (e: any) {
+      dirUsage = {
+        ...dirUsage,
+        [path]: { loading: false, error: e?.message || 'Failed to load', entries: [] },
       };
     }
   }
@@ -688,9 +718,32 @@
                 <div class="kpi-sub" style="color:var(--red)">{usage.error}</div>
               {:else if usage?.entries?.length}
                 {#each usage.entries as e}
-                  <div class="file-row">
-                    <span class="mono file-path" title={e.path}>{e.path}</span>
-                    <span class="mono file-size">{e.human || fmtBytes(e.bytes || 0)}</span>
+                  {@const dirOpen = expandedDir === e.path}
+                  {@const nested = dirUsage[e.path]}
+                  <div class="dir-block">
+                    <button type="button" class="file-row file-toggle" onclick={() => toggleDir(m.mount, e.path)}>
+                      <span class="chev nested" class:open={dirOpen}>{dirOpen ? '▾' : '▸'}</span>
+                      <span class="mono file-path" title={e.path}>{e.path}</span>
+                      <span class="mono file-size">{e.human || fmtBytes(e.bytes || 0)}</span>
+                    </button>
+                    {#if dirOpen}
+                      <div class="dir-files">
+                        {#if nested?.loading}
+                          <div class="kpi-sub">Scanning…</div>
+                        {:else if nested?.error}
+                          <div class="kpi-sub" style="color:var(--red)">{nested.error}</div>
+                        {:else if nested?.entries?.length}
+                          {#each nested.entries as child}
+                            <div class="file-row nested-row">
+                              <span class="mono file-path" title={child.path}>{child.path}</span>
+                              <span class="mono file-size">{child.human || fmtBytes(child.bytes || 0)}</span>
+                            </div>
+                          {/each}
+                        {:else}
+                          <div class="kpi-sub">No large entries found</div>
+                        {/if}
+                      </div>
+                    {/if}
                   </div>
                 {/each}
               {:else}
@@ -940,9 +993,21 @@
     margin:0.4rem 0 0.2rem 1.3rem; padding:0.45rem 0.55rem;
     background:var(--bg-raised); border-radius:var(--r-md); border:1px solid var(--border-subtle);
   }
-  .file-row { display:flex; justify-content:space-between; gap:0.75rem; padding:0.18rem 0; font-size:0.72rem; }
-  .file-path { color:var(--text-secondary); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; min-width:0; }
+  .dir-block { padding:0.05rem 0; }
+  .file-row { display:flex; justify-content:space-between; align-items:center; gap:0.5rem; padding:0.18rem 0; font-size:0.72rem; }
+  .file-toggle {
+    width:100%; background:transparent; border:0; padding:0.18rem 0; text-align:left;
+    cursor:pointer; color:inherit;
+  }
+  .file-toggle:hover .file-path { color:var(--text-primary); }
+  .chev.nested { width:0.9rem; font-size:0.65rem; line-height:1; }
+  .file-path { color:var(--text-secondary); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; min-width:0; flex:1; }
   .file-size { color:var(--text-primary); flex-shrink:0; }
+  .dir-files {
+    margin:0.15rem 0 0.25rem 0.9rem; padding:0.25rem 0.4rem;
+    background:var(--bg-base); border-radius:var(--r-sm); border:1px solid var(--border-subtle);
+  }
+  .nested-row { padding-left:0.15rem; }
   .failed-block { margin-top:0.85rem; padding-top:0.75rem; border-top:1px solid var(--border-subtle); }
   .failed-row { font-size:0.75rem; color:var(--red); padding:0.15rem 0; }
   .empty, .empty-cell { color:var(--text-tertiary); font-size:0.85rem; padding:0.75rem 0; text-align:center; }
